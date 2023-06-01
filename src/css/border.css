@@ -1,0 +1,44 @@
+.border1::before,
+.border1::after {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-top: 3px solid #3486da;
+  border-left: 3px solid #3486da;
+  left: -2px;
+  top: -2px;
+}
+.border2::before,
+.border2::after {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-top: 3px solid #3486da;
+  border-right: 3px solid #3486da;
+  right: -2px;
+  top: -2px;
+}
+.border3::before,
+.border3::after {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-bottom: 3px solid #3486da;
+  border-left: 3px solid #3486da;
+  bottom: -2px;
+  left: -2px;
+}
+.border4::before,
+.border4::after {
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-bottom: 3px solid #3486da;
+  border-right: 3px solid #3486da;
+  right: -2px;
+  bottom: -2px;
+}
