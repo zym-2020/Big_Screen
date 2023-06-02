@@ -27,7 +27,9 @@
         </el-col>
       </el-row>
     </div>
-    <notice />
+    <water-level-line-chart />
+    <prediction-line-chart />
+    <waterlevel-table />
   </div>
 </template>
 
@@ -35,9 +37,15 @@
 import { defineComponent, onMounted, ref, onUnmounted } from "vue";
 import mapBoxGl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
-import Notice from "@/components/Notice.vue";
+import WaterLevelLineChart from "@/components/WaterLevelLineChart.vue";
+import PredictionLineChart from "@/components/PredictionLineChart.vue";
+import WaterlevelTable from "@/components/WaterLevelTable.vue";
 export default defineComponent({
-  components: { Notice },
+  components: {
+    WaterLevelLineChart,
+    PredictionLineChart,
+    WaterlevelTable,
+  },
   setup() {
     const container = ref<HTMLElement>();
     const active = ref(true);
@@ -167,10 +175,27 @@ export default defineComponent({
     }
   }
 
-  .notice {
+  .water-level-line-chart {
     position: absolute;
-    top: 5vw;
+    top: 10vh;
+    right: 1vw;
+  }
+
+  .prediction-line-chart {
+    position: absolute;
+    bottom: 5vh;
+    right: 1vw;
+  }
+
+  .water-level-table {
+    position: absolute;
+    top: 10vh;
     left: 1vw;
+  }
+
+  .water-level-center {
+    top: calc(10vh + 2px);
+    left: 36vw;
   }
 }
 </style>

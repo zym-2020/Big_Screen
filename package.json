@@ -8,8 +8,10 @@
   },
   "dependencies": {
     "@element-plus/icons": "0.0.11",
+    "@kjgl77/datav-vue3": "^1.5.0",
     "@types/mapbox-gl": "^2.7.10",
     "core-js": "^3.8.3",
+    "echarts": "^5.4.2",
     "element-plus": "^2.1.4",
     "mapbox-gl": "^2.13.0",
     "vue": "^3.2.13",

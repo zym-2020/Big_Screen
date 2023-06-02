@@ -2,7 +2,7 @@
   <div class="notice">
     <div class="notice-content">
       <div class="notice-head">最&nbsp;近&nbsp;更&nbsp;新</div>
-      <el-table :data="tableData">
+      <el-table :data="tableData" stripe>
         <el-table-column prop="date" label="Date" width="180" />
         <el-table-column prop="address" label="Address" />
       </el-table>
@@ -52,16 +52,31 @@ export default defineComponent({
   z-index: 99;
   .notice-content {
     width: 20vw;
-    padding: 15px;
-    background: #0c2854;
+    padding: 18px;
+    background: #072951;
     border: 1px solid #3486da;
+    // box-shadow: -10px 0px 5px #034c6a inset, 0px -10px 5px #034c6a inset,
+    //   10px 0px 5px #034c6a inset, 0px 10px 5px #034c6a inset;
     .notice-head {
       color: white;
       text-align: center;
       font-family: "微软雅黑" !important;
     }
-    >>> .el-table__body {
-      background-color: #0c2854;
+    .el-table {
+      --el-table-border-color: none;
+
+      cursor: pointer;
+      ::v-deep th,
+      tr,
+      td {
+        background: #072951;
+      }
+      ::v-deep .el-table__row td {
+        background: #072951;
+      }
+      ::v-deep .el-table__row--striped td {
+        background: #081832;
+      }
     }
   }
 }
