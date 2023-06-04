@@ -9,33 +9,83 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, PropType } from "vue";
 import * as echarts from "echarts";
+import {
+  StationInfo,
+  YangtzeWaterLevelRes,
+  JSWaterLevelRes,
+  ZJWaterLevelRes,
+  AHWaterLevelRes,
+  HBWaterLevelRes,
+} from "@/type";
 export default defineComponent({
-  setup() {
+  props: {
+    stationInfo: {
+      type: Object as PropType<StationInfo>,
+    },
+    waterLevelData: {
+      type: Object as PropType<
+        | YangtzeWaterLevelRes[]
+        | JSWaterLevelRes[]
+        | ZJWaterLevelRes[]
+        | AHWaterLevelRes[]
+        | HBWaterLevelRes[]
+      >,
+    },
+  },
+  setup(props) {
     const chart = ref<HTMLElement>();
     let myChart: echarts.ECharts;
     let option: any = {};
+    const colors = ["#87cefa", "#ff7f50", "#32cd32", "#da70d6"];
     const initData = () => {
+      const timeList: string[] = [];
+      const series: any[] = [];
+      const keysCN: string[] = JSON.parse(props.stationInfo!.keys_cn).key;
+      const keys: string[] = JSON.parse(props.stationInfo!.keys).key;
+      keysCN.forEach((item) => {
+        series.push({
+          name: item,
+          type: "line",
+          smooth: true,
+          itemStyle: {
+            normal: {
+              lineStyle: {
+                shadowColor: "rgba(0,0,0,0.4)",
+              },
+            },
+          },
+          data: [],
+        });
+      });
+
+      props.waterLevelData!.forEach((item) => {
+        timeList.push(item.time.slice(11, 16));
+        let index = 0;
+        while (index < keys.length) {
+          series[index].data.push((item as any)[keys[index]]);
+          index++;
+        }
+      });
       option = {
-        color: ["#87cefa", "#ff7f50", "#32cd32", "#da70d6"],
+        color: colors.slice(0, keysCN.length),
         legend: {
           x: "center",
-          bottom: "30",
+          bottom: "50",
           textStyle: {
             color: "#ffffff",
           },
-          data: ["厦门第一医院", "厦门中山医院", "厦门中医院", "厦门第五医院"],
+          data: keysCN,
         },
         calculable: false,
         tooltip: {
           trigger: "item",
-          formatter: "{a}<br/>{b}<br/>{c}条",
+          formatter: "{a}<br/>{c}",
         },
         yAxis: [
           {
             type: "value",
-            // axisLine: { onZero: false },
             axisLine: {
               onZero: false,
               lineStyle: {
@@ -47,9 +97,6 @@ export default defineComponent({
               textStyle: {
                 color: "#fff",
               },
-              formatter: function (value: number) {
-                return value + "k条";
-              },
             },
             splitLine: {
               lineStyle: {
@@ -59,27 +106,23 @@ export default defineComponent({
             },
           },
         ],
+        dataZoom: [
+          {
+            xAxisIndex: [0],
+            filterMode: "filter",
+            start: 50,
+            end: 100,
+          },
+        ],
         xAxis: [
           {
             type: "category",
-            data: [
-              "8:00",
-              "10:00",
-              "12:00",
-              "14:00",
-              "16:00",
-              "18:00",
-              "20:00",
-              "22:00",
-            ],
+            data: timeList,
             axisLine: {
               lineStyle: {
                 color: "#034c6a",
               },
             },
-            // splitLine: {
-            //   show: false,
-            // },
             axisLabel: {
               textStyle: {
                 color: "#fff",
@@ -103,61 +146,13 @@ export default defineComponent({
           bottom: "20%",
           containLabel: true,
         },
-        series: [
-          {
-            name: "厦门第一医院",
-            type: "line",
-            smooth: true,
-            itemStyle: {
-              normal: {
-                lineStyle: {
-                  shadowColor: "rgba(0,0,0,0.4)",
-                },
-              },
-            },
-            data: [15, 0, 20, 45, 22.1, 25, 70, 55, 76],
-          },
-          {
-            name: "厦门中山医院",
-            type: "line",
-            smooth: true,
-            itemStyle: {
-              normal: {
-                lineStyle: {
-                  shadowColor: "rgba(0,0,0,0.4)",
-                },
-              },
-            },
-            data: [25, 10, 30, 55, 32.1, 35, 80, 65, 76],
-          },
-          {
-            name: "厦门中医院",
-            type: "line",
-            smooth: true,
-            itemStyle: {
-              normal: {
-                lineStyle: {
-                  shadowColor: "rgba(0,0,0,0.4)",
-                },
-              },
-            },
-            data: [35, 20, 40, 65, 42.1, 45, 90, 75, 96],
-          },
-          {
-            name: "厦门第五医院",
-            type: "line",
-            smooth: true,
-            itemStyle: {
-              normal: {
-                lineStyle: {
-                  shadowColor: "rgba(0,0,0,0.4)",
-                },
-              },
-            },
-            data: [45, 30, 50, 75, 52.1, 55, 100, 85, 106],
-          },
-        ],
+        series: series,
       };
+    };
+
+    const refreshData = () => {
+      initData();
+      myChart.setOption(option);
     };
 
     onMounted(() => {
@@ -166,7 +161,7 @@ export default defineComponent({
       myChart.setOption(option);
     });
 
-    return { chart };
+    return { chart, refreshData };
   },
 });
 </script>

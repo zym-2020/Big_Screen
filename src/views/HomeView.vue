@@ -1,5 +1,5 @@
 <template>
-  <div class="main">
+  <div class="main" v-loading="loading" element-loading-text="Loading...">
     <div class="container" ref="container"></div>
     <div class="head">
       <el-row>
@@ -27,9 +27,17 @@
         </el-col>
       </el-row>
     </div>
-    <water-level-line-chart />
+    <water-level-line-chart
+      v-if="!loading"
+      :stationInfo="stationInfo"
+      :waterLevelData="waterLevelData"
+    />
     <prediction-line-chart />
-    <waterlevel-table />
+    <waterlevel-table
+      v-if="!loading"
+      :stationInfo="stationInfo"
+      :waterLevelData="waterLevelData"
+    />
   </div>
 </template>
 
@@ -40,6 +48,19 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import WaterLevelLineChart from "@/components/WaterLevelLineChart.vue";
 import PredictionLineChart from "@/components/PredictionLineChart.vue";
 import WaterlevelTable from "@/components/WaterLevelTable.vue";
+import {
+  getAllStation,
+  getWaterLevelByStationAndTime,
+} from "@/request/requestUtil";
+import {
+  StationInfo,
+  YangtzeWaterLevelRes,
+  JSWaterLevelRes,
+  ZJWaterLevelRes,
+  AHWaterLevelRes,
+  HBWaterLevelRes,
+} from "@/type";
+import { dateFormat } from "@/utils/common";
 export default defineComponent({
   components: {
     WaterLevelLineChart,
@@ -49,8 +70,21 @@ export default defineComponent({
   setup() {
     const container = ref<HTMLElement>();
     const active = ref(true);
+    const loading = ref(true);
     const time = ref("");
     let timeout: string | number;
+
+    const stationInfoList = ref<StationInfo[]>([]);
+    const stationInfo = ref<StationInfo>();
+
+    const waterLevelData = ref<
+      | YangtzeWaterLevelRes[]
+      | JSWaterLevelRes[]
+      | ZJWaterLevelRes[]
+      | AHWaterLevelRes[]
+      | HBWaterLevelRes[]
+    >([]);
+
     let map: mapBoxGl.Map;
     const initMap = () => {
       map = new mapBoxGl.Map({
@@ -93,7 +127,35 @@ export default defineComponent({
         seconds;
     };
 
-    onMounted(() => {
+    const initData = async () => {
+      const statinList = await getAllStation();
+      if (statinList) {
+        stationInfoList.value = statinList.data;
+        stationInfo.value = statinList.data[0];
+        const startDate = new Date();
+        const endDate = new Date();
+        startDate.setTime(endDate.getTime() - 24 * 3600000);
+        const startTime =
+          dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00";
+        const endTime =
+          dateFormat(endDate.toString(), "yyyy-MM-dd hh") + ":00:00";
+        console.log(startTime, endTime);
+        const data = await getWaterLevelByStationAndTime(
+          stationInfo.value!.type,
+          stationInfo.value!.name,
+          startTime,
+          endTime
+        );
+        console.log(data);
+        if (data) {
+          waterLevelData.value = data.data;
+        }
+      }
+    };
+
+    onMounted(async () => {
+      await initData();
+      loading.value = false;
       timeout = setInterval(getTimesInterval, 1000).toString();
       initMap();
     });
@@ -102,7 +164,15 @@ export default defineComponent({
       if (timeout) clearInterval(timeout);
     });
 
-    return { container, active, time };
+    return {
+      container,
+      active,
+      time,
+      loading,
+      stationInfo,
+      stationInfoList,
+      waterLevelData,
+    };
   },
 });
 </script>

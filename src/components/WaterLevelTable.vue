@@ -2,14 +2,13 @@
   <div class="water-level-table">
     <dv-border-box8 :dur="5">
       <div class="table">
-        <div class="title">站点名</div>
+        <div class="title">{{ stationInfo.name }}</div>
         <dv-decoration3 style="width: 250px; height: 30px; margin-left: 5px" />
         <table cellpadding="0" cellspacing="0">
           <thead>
             <tr class="table-head">
               <th>时间</th>
-              <th>水位</th>
-              <th>流量</th>
+              <th v-for="item in tableNameList" :key="item">{{ item }}</th>
               <th>操作</th>
             </tr>
           </thead>
@@ -17,10 +16,15 @@
         <el-scrollbar>
           <table cellpadding="0" cellspacing="0">
             <tbody>
-              <tr v-for="item in 24" :key="item" class="table-body">
-                <td>1</td>
-                <td>萝卜1</td>
-                <td>高血压</td>
+              <tr
+                v-for="(item, index) in waterLevelData"
+                :key="index"
+                class="table-body"
+              >
+                <td>{{ item.time }}</td>
+                <td v-for="key in resultKeyList" :key="key">
+                  {{ item[key] ? item[key] : "缺失" }}
+                </td>
                 <td><button class="btn btn-primary btn-sm">查看</button></td>
               </tr>
             </tbody>
@@ -32,9 +36,31 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent, PropType } from "vue";
+import {
+  StationInfo,
+  YangtzeWaterLevelRes,
+  JSWaterLevelRes,
+  ZJWaterLevelRes,
+  AHWaterLevelRes,
+  HBWaterLevelRes,
+} from "@/type";
 export default defineComponent({
-  setup() {
+  props: {
+    stationInfo: {
+      type: Object as PropType<StationInfo>,
+    },
+    waterLevelData: {
+      type: Object as PropType<
+        | YangtzeWaterLevelRes[]
+        | JSWaterLevelRes[]
+        | ZJWaterLevelRes[]
+        | AHWaterLevelRes[]
+        | HBWaterLevelRes[]
+      >,
+    },
+  },
+  setup(props) {
     const config = {
       data: [25],
       shape: "roundRect",
@@ -43,7 +69,29 @@ export default defineComponent({
       waveHeight: 30,
     };
 
-    return { config };
+    const stationInfo = computed(() => {
+      return props.stationInfo;
+    });
+
+    const tableNameList = computed(() => {
+      return JSON.parse(props.stationInfo!.keys_cn).key;
+    });
+    const resultKeyList = computed(() => {
+      return JSON.parse(props.stationInfo!.keys).key;
+    });
+
+    const waterLevelData = computed(() => {
+      console.log(props.waterLevelData);
+      return props.waterLevelData;
+    });
+
+    return {
+      config,
+      stationInfo,
+      tableNameList,
+      waterLevelData,
+      resultKeyList,
+    };
   },
 });
 </script>
