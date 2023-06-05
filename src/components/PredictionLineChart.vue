@@ -9,15 +9,34 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from "vue";
+import { defineComponent, onMounted, ref, PropType } from "vue";
 import * as echarts from "echarts";
+import { StationInfo } from "@/type";
+import { dateFormat, timestamp2time } from "@/utils/common";
 export default defineComponent({
-  setup() {
+  props: {
+    prediction: {
+      type: Object as PropType<{ time: string; value: number[] }>,
+    },
+    stationInfo: {
+      type: Object as PropType<StationInfo>,
+    },
+  },
+
+  setup(props) {
     const chart = ref<HTMLElement>();
     let myChart: echarts.ECharts;
     let option: any = {};
 
     const initData = () => {
+      const startTime = props.prediction!.time;
+      const time: string[] = [];
+
+      for (let i = 0; i < props.prediction!.value.length; i++) {
+        time.push(
+          timestamp2time(Date.parse(startTime) + 3600000 * i).slice(11, 16)
+        );
+      }
       option = {
         tooltip: {
           trigger: "axis",
@@ -31,9 +50,17 @@ export default defineComponent({
           left: "15",
           top: "20",
           right: "30",
-          bottom: "15",
+          bottom: "45",
           containLabel: true,
         },
+        dataZoom: [
+          {
+            xAxisIndex: [0],
+            filterMode: "filter",
+            start: 50,
+            end: 100,
+          },
+        ],
 
         xAxis: [
           {
@@ -51,20 +78,7 @@ export default defineComponent({
               },
             },
 
-            data: [
-              "1月",
-              "2月",
-              "3月",
-              "4月",
-              "5月",
-              "6月",
-              "7月",
-              "8月",
-              "9月",
-              "10月",
-              "11月",
-              "12月",
-            ],
+            data: time,
           },
           {
             axisPointer: { show: false },
@@ -99,7 +113,7 @@ export default defineComponent({
         ],
         series: [
           {
-            name: "结算率",
+            name: "水文预报",
             type: "line",
             smooth: true,
             symbol: "circle",
@@ -140,7 +154,7 @@ export default defineComponent({
                 borderWidth: 12,
               },
             },
-            data: [3, 4, 3, 4, 3, 4, 3, 6, 2, 4, 2, 4],
+            data: props.prediction!.value,
           },
         ],
       };

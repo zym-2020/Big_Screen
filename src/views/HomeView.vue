@@ -32,7 +32,11 @@
       :stationInfo="stationInfo"
       :waterLevelData="waterLevelData"
     />
-    <prediction-line-chart />
+    <prediction-line-chart
+      :stationInfo="stationInfo"
+      v-if="!loading"
+      :prediction="prediction"
+    />
     <waterlevel-table
       v-if="!loading"
       :stationInfo="stationInfo"
@@ -51,6 +55,7 @@ import WaterlevelTable from "@/components/WaterLevelTable.vue";
 import {
   getAllStation,
   getWaterLevelByStationAndTime,
+  getPrediction,
 } from "@/request/requestUtil";
 import {
   StationInfo,
@@ -84,6 +89,8 @@ export default defineComponent({
       | AHWaterLevelRes[]
       | HBWaterLevelRes[]
     >([]);
+
+    const prediction = ref<{ time: string; value: number[] }>();
 
     let map: mapBoxGl.Map;
     const initMap = () => {
@@ -139,16 +146,19 @@ export default defineComponent({
           dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00";
         const endTime =
           dateFormat(endDate.toString(), "yyyy-MM-dd hh") + ":00:00";
-        console.log(startTime, endTime);
         const data = await getWaterLevelByStationAndTime(
           stationInfo.value!.type,
           stationInfo.value!.name,
           startTime,
           endTime
         );
-        console.log(data);
         if (data) {
           waterLevelData.value = data.data;
+        }
+        // const res = await getPrediction(stationInfo.value!.name_en);
+        const res = await getPrediction("nanjingshuiwenzhan");
+        if (res) {
+          prediction.value = res.data.data;
         }
       }
     };
@@ -172,6 +182,7 @@ export default defineComponent({
       stationInfo,
       stationInfoList,
       waterLevelData,
+      prediction,
     };
   },
 });

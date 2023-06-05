@@ -9,7 +9,6 @@
             <tr class="table-head">
               <th>时间</th>
               <th v-for="item in tableNameList" :key="item">{{ item }}</th>
-              <th>操作</th>
             </tr>
           </thead>
         </table>
@@ -25,7 +24,6 @@
                 <td v-for="key in resultKeyList" :key="key">
                   {{ item[key] ? item[key] : "缺失" }}
                 </td>
-                <td><button class="btn btn-primary btn-sm">查看</button></td>
               </tr>
             </tbody>
           </table>

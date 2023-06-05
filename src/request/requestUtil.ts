@@ -15,3 +15,7 @@ export const getWaterLevelByStationAndTime = async (
     true
   );
 };
+
+export const getPrediction = async (stationName: string) => {
+  return await get(`/multiSource/getPrediction/${stationName}`, true);
+};
