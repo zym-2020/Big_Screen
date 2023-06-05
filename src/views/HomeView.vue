@@ -138,7 +138,13 @@ export default defineComponent({
       const statinList = await getAllStation();
       if (statinList) {
         stationInfoList.value = statinList.data;
-        stationInfo.value = statinList.data[0];
+        for (let i = 0; i < statinList.data.length; i++) {
+          if (statinList.data[i].name === "南京水文站") {
+            stationInfo.value = statinList.data[i];
+            break;
+          }
+        }
+
         const startDate = new Date();
         const endDate = new Date();
         startDate.setTime(endDate.getTime() - 24 * 3600000);
@@ -155,7 +161,6 @@ export default defineComponent({
         if (data) {
           waterLevelData.value = data.data;
         }
-        // const res = await getPrediction(stationInfo.value!.name_en);
         const res = await getPrediction("nanjingshuiwenzhan");
         if (res) {
           prediction.value = res.data.data;

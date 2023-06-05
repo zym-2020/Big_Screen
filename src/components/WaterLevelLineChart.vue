@@ -44,28 +44,63 @@ export default defineComponent({
       const series: any[] = [];
       const keysCN: string[] = JSON.parse(props.stationInfo!.keys_cn).key;
       const keys: string[] = JSON.parse(props.stationInfo!.keys).key;
+      const yAxis: any[] = [];
+      let start = 50;
+      let index = 0;
       keysCN.forEach((item) => {
-        series.push({
-          name: item,
-          type: "line",
-          smooth: true,
-          itemStyle: {
-            normal: {
-              lineStyle: {
-                shadowColor: "rgba(0,0,0,0.4)",
+        if (item !== "雨量") {
+          series.push({
+            name: item,
+            type: "line",
+            smooth: true,
+            yAxisIndex: index,
+            itemStyle: {
+              normal: {
+                lineStyle: {
+                  shadowColor: "rgba(0,0,0,0.4)",
+                },
               },
             },
-          },
-          data: [],
-        });
+            data: [],
+          });
+          if (index >= 2) {
+            yAxis.push({
+              alignTicks: true,
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: colors[index],
+                },
+              },
+
+              type: "value",
+              offset: start,
+            });
+            start += 50;
+          } else {
+            yAxis.push({
+              alignTicks: true,
+              type: "value",
+              axisLine: {
+                show: true,
+                lineStyle: {
+                  color: colors[index],
+                },
+              },
+            });
+          }
+          index++;
+        }
       });
 
       props.waterLevelData!.forEach((item) => {
         timeList.push(item.time.slice(11, 16));
         let index = 0;
-        while (index < keys.length) {
-          series[index].data.push((item as any)[keys[index]]);
-          index++;
+        for (let i = 0; i < keys.length; i++) {
+          if (keys[i] !== "rainfall") {
+            series[index].data.push((item as any)[keys[index]]);
+            index++;
+          }
         }
       });
       option = {
@@ -83,29 +118,8 @@ export default defineComponent({
           trigger: "item",
           formatter: "{a}<br/>{c}",
         },
-        yAxis: [
-          {
-            type: "value",
-            axisLine: {
-              onZero: false,
-              lineStyle: {
-                color: "#034c6a",
-              },
-            },
+        yAxis: yAxis,
 
-            axisLabel: {
-              textStyle: {
-                color: "#fff",
-              },
-            },
-            splitLine: {
-              lineStyle: {
-                width: 0,
-                type: "solid",
-              },
-            },
-          },
-        ],
         dataZoom: [
           {
             xAxisIndex: [0],
@@ -142,7 +156,7 @@ export default defineComponent({
         ],
         grid: {
           left: "5%",
-          right: "5%",
+          right: 50 * (keys.length - 1),
           bottom: "20%",
           containLabel: true,
         },

@@ -57,8 +57,8 @@ export default defineComponent({
           {
             xAxisIndex: [0],
             filterMode: "filter",
-            start: 50,
-            end: 100,
+            start: 0,
+            end: 50,
           },
         ],
 

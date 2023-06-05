@@ -2,13 +2,31 @@
   <div class="water-level-table">
     <dv-border-box8 :dur="5">
       <div class="table">
-        <div class="title">{{ stationInfo.name }}</div>
+        <div class="title">
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link">
+              {{ stationInfo.name
+              }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+            </span>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item>Action 1</el-dropdown-item>
+                <el-dropdown-item>Action 2 </el-dropdown-item>
+                <el-dropdown-item>Action 3</el-dropdown-item>
+                <el-dropdown-item>Action 4</el-dropdown-item>
+                <el-dropdown-item>Action 5</el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
+        </div>
         <dv-decoration3 style="width: 250px; height: 30px; margin-left: 5px" />
         <table cellpadding="0" cellspacing="0">
           <thead>
             <tr class="table-head">
-              <th>时间</th>
-              <th v-for="item in tableNameList" :key="item">{{ item }}</th>
+              <td class="time-col">时间</td>
+              <td v-for="item in tableNameList" :key="item" class="attribute">
+                {{ item }}
+              </td>
             </tr>
           </thead>
         </table>
@@ -20,8 +38,8 @@
                 :key="index"
                 class="table-body"
               >
-                <td>{{ item.time }}</td>
-                <td v-for="key in resultKeyList" :key="key">
+                <td class="time-col">{{ item.time }}</td>
+                <td v-for="key in resultKeyList" :key="key" class="attribute">
                   {{ item[key] ? item[key] : "缺失" }}
                 </td>
               </tr>
@@ -67,6 +85,10 @@ export default defineComponent({
       waveHeight: 30,
     };
 
+    const tableWidth = computed(() => {
+      return `calc(65% / ${tableNameList.value.length})`;
+    });
+
     const stationInfo = computed(() => {
       return props.stationInfo;
     });
@@ -89,6 +111,7 @@ export default defineComponent({
       tableNameList,
       waterLevelData,
       resultKeyList,
+      tableWidth,
     };
   },
 });
@@ -98,6 +121,7 @@ export default defineComponent({
 .water-level-table {
   z-index: 99;
   width: 30vw;
+
   height: 85vh;
   ::v-deep .dv-border-box-8 {
     padding-top: 3px;
@@ -111,10 +135,15 @@ export default defineComponent({
       10px 0px 5px #034c6a inset, 0px 10px 5px #034c6a inset;
     .title {
       height: 10vh;
-      line-height: 10vh;
       text-align: center;
-      color: white;
-      font-size: 3vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      .el-dropdown {
+        color: white;
+        font-size: 3vh;
+      }
     }
     table {
       width: 100%;
@@ -124,6 +153,15 @@ export default defineComponent({
       }
       .table-head {
         color: #4dc6f9;
+      }
+      td {
+        text-align: center;
+      }
+      .time-col {
+        width: 35%;
+      }
+      .attribute {
+        width: v-bind(tableWidth);
       }
     }
     .el-scrollbar {
@@ -136,9 +174,6 @@ export default defineComponent({
             background-color: #072951;
             box-shadow: -10px 0px 15px #034c6a inset,
               10px 0px 15px #034c6a inset;
-          }
-          td {
-            text-align: center;
           }
         }
       }
