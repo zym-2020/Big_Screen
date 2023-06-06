@@ -38,6 +38,15 @@ export default defineComponent({
         );
       }
       option = {
+        title: {
+          show: true,
+          text: "水位预报图",
+          x: "center",
+          top: "15",
+          textStyle: {
+            color: "white",
+          },
+        },
         tooltip: {
           trigger: "axis",
           axisPointer: {
@@ -48,7 +57,7 @@ export default defineComponent({
         },
         grid: {
           left: "15",
-          top: "20",
+          top: "50",
           right: "30",
           bottom: "45",
           containLabel: true,
@@ -67,10 +76,8 @@ export default defineComponent({
             type: "category",
             boundaryGap: false,
             axisLabel: {
-              textStyle: {
-                color: "rgba(255,255,255,.6)",
-                fontSize: 16,
-              },
+              color: "rgba(255,255,255,.6)",
+              fontSize: 16,
             },
             axisLine: {
               lineStyle: {
@@ -98,10 +105,8 @@ export default defineComponent({
               },
             },
             axisLabel: {
-              textStyle: {
-                color: "rgba(255,255,255,.6)",
-                fontSize: 16,
-              },
+              color: "rgba(255,255,255,.6)",
+              fontSize: 16,
             },
 
             splitLine: {
@@ -120,39 +125,33 @@ export default defineComponent({
             symbolSize: 5,
             showSymbol: false,
             lineStyle: {
-              normal: {
-                color: "#dddc6b",
-                width: 4,
-              },
+              color: "#dddc6b",
+              width: 4,
             },
             areaStyle: {
-              normal: {
-                color: new echarts.graphic.LinearGradient(
-                  0,
-                  0,
-                  0,
-                  1,
-                  [
-                    {
-                      offset: 0,
-                      color: "rgba(221, 220, 107, 0.4)",
-                    },
-                    {
-                      offset: 0.8,
-                      color: "rgba(221, 220, 107, 0.1)",
-                    },
-                  ],
-                  false
-                ),
-                shadowColor: "rgba(0, 0, 0, 0.1)",
-              },
+              color: new echarts.graphic.LinearGradient(
+                0,
+                0,
+                0,
+                1,
+                [
+                  {
+                    offset: 0,
+                    color: "rgba(221, 220, 107, 0.4)",
+                  },
+                  {
+                    offset: 0.8,
+                    color: "rgba(221, 220, 107, 0.1)",
+                  },
+                ],
+                false
+              ),
+              shadowColor: "rgba(0, 0, 0, 0.1)",
             },
             itemStyle: {
-              normal: {
-                color: "#dddc6b",
-                borderColor: "rgba(221, 220, 107, .1)",
-                borderWidth: 12,
-              },
+              color: "#dddc6b",
+              borderColor: "rgba(221, 220, 107, .1)",
+              borderWidth: 12,
             },
             data: props.prediction!.value,
           },

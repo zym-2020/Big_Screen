@@ -1,7 +1,7 @@
 <template>
   <div class="main" v-loading="loading" element-loading-text="Loading...">
     <div class="container" ref="container"></div>
-    <div class="head">
+    <div class="head" v-if="!loading">
       <el-row>
         <el-col :span="9">
           <div class="nav">

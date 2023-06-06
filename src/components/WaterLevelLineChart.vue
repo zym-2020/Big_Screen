@@ -54,13 +54,16 @@ export default defineComponent({
             type: "line",
             smooth: true,
             yAxisIndex: index,
-            itemStyle: {
-              normal: {
-                lineStyle: {
-                  shadowColor: "rgba(0,0,0,0.4)",
-                },
-              },
+            lineStyle: {
+              shadowColor: "rgba(0,0,0,0.4)",
             },
+            // itemStyle: {
+            //   normal: {
+            //     lineStyle: {
+            //       shadowColor: "rgba(0,0,0,0.4)",
+            //     },
+            //   },
+            // },
             data: [],
           });
           if (index >= 2) {
@@ -104,6 +107,15 @@ export default defineComponent({
         }
       });
       option = {
+        title: {
+          show: true,
+          text: "水位折线图",
+          x: "center",
+          top: "15",
+          textStyle: {
+            color: "white",
+          },
+        },
         color: colors.slice(0, keysCN.length),
         legend: {
           x: "center",
@@ -138,9 +150,7 @@ export default defineComponent({
               },
             },
             axisLabel: {
-              textStyle: {
-                color: "#fff",
-              },
+              color: "#fff",
               formatter: function (value: number) {
                 return value + "";
               },

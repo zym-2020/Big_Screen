@@ -101,8 +101,7 @@ export default defineComponent({
     });
 
     const waterLevelData = computed(() => {
-      console.log(props.waterLevelData);
-      return props.waterLevelData;
+      return props.waterLevelData!.reverse();
     });
 
     return {
@@ -111,6 +110,7 @@ export default defineComponent({
       tableNameList,
       waterLevelData,
       resultKeyList,
+      
       tableWidth,
     };
   },
