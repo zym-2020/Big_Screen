@@ -43,3 +43,11 @@ export type ZJWaterLevelRes = {
 
 export type AHWaterLevelRes = YangtzeWaterLevelRes;
 export type HBWaterLevelRes = YangtzeWaterLevelRes;
+
+export type WaterLevelLineChartType = {
+  refreshData: () => {};
+};
+
+export type PredictionLineChartType = {
+  refreshData: () => {};
+};

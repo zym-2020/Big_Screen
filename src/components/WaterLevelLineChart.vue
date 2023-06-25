@@ -49,25 +49,11 @@ export default defineComponent({
       let index = 0;
       keysCN.forEach((item) => {
         if (item !== "雨量") {
-          series.push({
-            name: item,
-            type: "line",
-            smooth: true,
-            yAxisIndex: index,
-            lineStyle: {
-              shadowColor: "rgba(0,0,0,0.4)",
-            },
-            // itemStyle: {
-            //   normal: {
-            //     lineStyle: {
-            //       shadowColor: "rgba(0,0,0,0.4)",
-            //     },
-            //   },
-            // },
-            data: [],
-          });
           if (index >= 2) {
             yAxis.push({
+              axisTick: {
+                show: true,
+              },
               alignTicks: true,
               axisLine: {
                 show: true,
@@ -82,6 +68,9 @@ export default defineComponent({
             start += 50;
           } else {
             yAxis.push({
+              axisTick: {
+                show: true,
+              },
               alignTicks: true,
               type: "value",
               axisLine: {
@@ -92,6 +81,18 @@ export default defineComponent({
               },
             });
           }
+          series.push({
+            name: item,
+            type: "line",
+            smooth: true,
+            yAxisIndex: index,
+            lineStyle: {
+              shadowColor: "rgba(0,0,0,0.4)",
+            },
+            data: [],
+            connectNulls: true,
+          });
+
           index++;
         }
       });
@@ -106,6 +107,7 @@ export default defineComponent({
           }
         }
       });
+      console.log(yAxis, keysCN, index, series);
       option = {
         title: {
           show: true,

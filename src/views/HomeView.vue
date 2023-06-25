@@ -31,31 +31,34 @@
       v-if="!loading"
       :stationInfo="stationInfo"
       :waterLevelData="waterLevelData"
+      ref="waterLevelLineChart"
     />
     <prediction-line-chart
-      :stationInfo="stationInfo"
       v-if="!loading"
       :prediction="prediction"
+      ref="predictionLineChart"
     />
     <waterlevel-table
       v-if="!loading"
       :stationInfo="stationInfo"
       :waterLevelData="waterLevelData"
+      :stationList="stationInfoList"
+      @changeStation="changeStation"
     />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, onUnmounted } from "vue";
+import { defineComponent, onMounted, ref, onUnmounted, nextTick } from "vue";
 import mapBoxGl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import WaterLevelLineChart from "@/components/WaterLevelLineChart.vue";
 import PredictionLineChart from "@/components/PredictionLineChart.vue";
 import WaterlevelTable from "@/components/WaterLevelTable.vue";
 import {
-  getAllStation,
   getWaterLevelByStationAndTime,
   getPrediction,
+  getPredictionStation,
 } from "@/request/requestUtil";
 import {
   StationInfo,
@@ -64,6 +67,8 @@ import {
   ZJWaterLevelRes,
   AHWaterLevelRes,
   HBWaterLevelRes,
+  WaterLevelLineChartType,
+  PredictionLineChartType,
 } from "@/type";
 import { dateFormat } from "@/utils/common";
 export default defineComponent({
@@ -73,6 +78,8 @@ export default defineComponent({
     WaterlevelTable,
   },
   setup() {
+    const waterLevelLineChart = ref<WaterLevelLineChartType>();
+    const predictionLineChart = ref<PredictionLineChartType>();
     const container = ref<HTMLElement>();
     const active = ref(true);
     const loading = ref(true);
@@ -134,8 +141,43 @@ export default defineComponent({
         seconds;
     };
 
+    const changeStation = async (id: string) => {
+      for (let i = 0; i < stationInfoList.value.length; i++) {
+        if (id === stationInfoList.value[i].id) {
+          stationInfo.value = stationInfoList.value[i];
+          const startDate = new Date();
+          const endDate = new Date();
+          startDate.setTime(endDate.getTime() - 24 * 3600000);
+          const startTime =
+            dateFormat(startDate.toString(), "yyyy-MM-dd hh") + ":00:00";
+          const endTime =
+            dateFormat(endDate.toString(), "yyyy-MM-dd hh") + ":00:00";
+          const data = await getWaterLevelByStationAndTime(
+            stationInfo.value.type,
+            stationInfo.value.name,
+            startTime,
+            endTime
+          );
+          if (data) {
+            waterLevelData.value = data.data;
+            nextTick(() => {
+              waterLevelLineChart.value?.refreshData();
+            });
+          }
+          const res = await getPrediction(stationInfo.value.name_en);
+          if (res) {
+            prediction.value = res.data;
+            nextTick(() => {
+              predictionLineChart.value?.refreshData();
+            });
+          }
+          break;
+        }
+      }
+    };
+
     const initData = async () => {
-      const statinList = await getAllStation();
+      const statinList = await getPredictionStation();
       if (statinList) {
         stationInfoList.value = statinList.data;
         for (let i = 0; i < statinList.data.length; i++) {
@@ -163,7 +205,7 @@ export default defineComponent({
         }
         const res = await getPrediction("nanjingshuiwenzhan");
         if (res) {
-          prediction.value = res.data.data;
+          prediction.value = res.data;
         }
       }
     };
@@ -188,6 +230,9 @@ export default defineComponent({
       stationInfoList,
       waterLevelData,
       prediction,
+      waterLevelLineChart,
+      predictionLineChart,
+      changeStation,
     };
   },
 });

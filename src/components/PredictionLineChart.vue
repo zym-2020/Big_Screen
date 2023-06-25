@@ -9,17 +9,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref, PropType } from "vue";
+import { defineComponent, onMounted, ref, PropType, computed } from "vue";
 import * as echarts from "echarts";
-import { StationInfo } from "@/type";
 import { dateFormat, timestamp2time } from "@/utils/common";
 export default defineComponent({
   props: {
     prediction: {
       type: Object as PropType<{ time: string; value: number[] }>,
-    },
-    stationInfo: {
-      type: Object as PropType<StationInfo>,
     },
   },
 
@@ -159,13 +155,18 @@ export default defineComponent({
       };
     };
 
+    const refreshData = () => {
+      initData();
+      myChart.setOption(option);
+    };
+
     onMounted(() => {
       initData();
       myChart = echarts.init(chart.value!);
       myChart.setOption(option);
     });
 
-    return { chart };
+    return { chart, refreshData };
   },
 });
 </script>

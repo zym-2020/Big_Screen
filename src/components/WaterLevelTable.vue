@@ -3,18 +3,18 @@
     <dv-border-box8 :dur="5">
       <div class="table">
         <div class="title">
-          <el-dropdown trigger="click">
+          <el-dropdown trigger="click" @command="handleCommand">
             <span class="el-dropdown-link">
-              {{ stationInfo.name
-              }}<el-icon class="el-icon--right"><arrow-down /></el-icon>
+              {{ stationInfo.name }}
             </span>
             <template #dropdown>
               <el-dropdown-menu>
-                <el-dropdown-item>Action 1</el-dropdown-item>
-                <el-dropdown-item>Action 2 </el-dropdown-item>
-                <el-dropdown-item>Action 3</el-dropdown-item>
-                <el-dropdown-item>Action 4</el-dropdown-item>
-                <el-dropdown-item>Action 5</el-dropdown-item>
+                <el-dropdown-item
+                  v-for="(item, index) in stationList"
+                  :key="index"
+                  :command="item.id"
+                  >{{ item.name }}</el-dropdown-item
+                >
               </el-dropdown-menu>
             </template>
           </el-dropdown>
@@ -75,8 +75,12 @@ export default defineComponent({
         | HBWaterLevelRes[]
       >,
     },
+    stationList: {
+      type: Object as PropType<StationInfo[]>,
+    },
   },
-  setup(props) {
+  emits: ["changeStation"],
+  setup(props, context) {
     const config = {
       data: [25],
       shape: "roundRect",
@@ -87,6 +91,10 @@ export default defineComponent({
 
     const tableWidth = computed(() => {
       return `calc(65% / ${tableNameList.value.length})`;
+    });
+
+    const stationList = computed(() => {
+      return props.stationList;
     });
 
     const stationInfo = computed(() => {
@@ -104,14 +112,19 @@ export default defineComponent({
       return props.waterLevelData!.reverse();
     });
 
+    const handleCommand = (id: string) => {
+      context.emit("changeStation", id);
+    };
+
     return {
       config,
       stationInfo,
       tableNameList,
       waterLevelData,
       resultKeyList,
-      
+      stationList,
       tableWidth,
+      handleCommand,
     };
   },
 });
