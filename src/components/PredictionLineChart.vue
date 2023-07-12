@@ -116,13 +116,15 @@ export default defineComponent({
           {
             name: "水文预报",
             type: "line",
-            smooth: true,
+            smooth: false,
             symbol: "circle",
             symbolSize: 5,
             showSymbol: false,
+            
             lineStyle: {
               color: "#dddc6b",
               width: 4,
+              type: "dashed"
             },
             areaStyle: {
               color: new echarts.graphic.LinearGradient(
